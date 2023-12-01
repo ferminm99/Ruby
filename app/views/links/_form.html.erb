@@ -1,0 +1,52 @@
+<%= form_with(model: link, local: true) do |form| %>
+  <% if link.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(link.errors.count, "error") %> prohibited this link from being saved:</h2>
+      <ul>
+        <% link.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :url %>
+    <%= form.text_field :url %>
+  </div>
+
+  <div class="field">
+    <%= form.label :link_type %>
+    <%= form.select :link_type, Link.link_types.keys.map { |type| [type.titleize, type] } %>
+  </div>
+
+  <div class="field">
+    <%= form.label :password_digest, "Password (for private links)" %>
+    <%= form.password_field :password_digest %>
+  </div>
+
+  <div class="field">
+    <%= form.label :expiration_date, "Expiration Date (for temporal links)" %>
+    <%= form.datetime_select :expiration_date %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+  </div>
+<% end %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    function updateLinkTypeFields() {
+      var linkType = document.querySelector("#link_link_type").value;
+      document.querySelector("#link_password_digest").style.display = linkType == "private_link" ? "block" : "none";
+      document.querySelector("#link_expiration_date").style.display = linkType == "temporal" ? "block" : "none";
+    }
+
+    // Actualizar campos al cargar
+    updateLinkTypeFields();
+
+    // Actualizar campos cuando el tipo de link cambie
+    document.querySelector("#link_link_type").addEventListener("change", updateLinkTypeFields);
+  });
+</script>
