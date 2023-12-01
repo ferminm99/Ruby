@@ -27,8 +27,19 @@ class Link < ApplicationRecord
 
   public
   # Verificar si el link es accesible (no expirado y no usado si es efímero)
-  def accessible?
-    !expired? && (!ephemeral? || (ephemeral? && access_count.zero?))
+  def accessible?(request)
+    case link_type
+    when 'regular'
+      true
+    when 'temporary'
+      Time.current < expires_at
+    when 'private'
+      request.session[:"link_#{id}_authenticated"]
+    when 'ephemeral'
+      !accessed
+    else
+      false
+    end
   end
 
   # Lógica para incrementar el contador de accesos (para links efímeros)

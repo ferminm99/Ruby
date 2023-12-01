@@ -10,11 +10,12 @@ class LinksController < ApplicationController
       @link = current_user.links.find_by(slug: params[:slug])
       
       if @link.nil? || !@link.accessible?
-        render status: :not_found # O puedes redirigir a una página con mensaje personalizado
+        redirect_to home_index_path, alert: 'Link not found'
       elsif @link.private_link?
         # Lógica para manejar la solicitud de clave
       else
         @link.increment_access_count if @link.ephemeral?
+        LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
         redirect_to @link.url, allow_other_host: true
       end
     end
@@ -46,9 +47,9 @@ class LinksController < ApplicationController
     end
   
     def destroy
-      @link = Link.find(params[:id])
-      @link.destroy
-      redirect_to home_index_path, notice: 'Link was successfully destroyed.'
+        @link = Link.find(params[:id])
+        @link.destroy
+        redirect_to home_index_path, notice: 'Link was successfully destroyed.'
     end
   
     private
