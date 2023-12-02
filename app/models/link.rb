@@ -1,6 +1,6 @@
 class Link < ApplicationRecord
   belongs_to :user
-  has_many :link_accesses
+  has_many :link_accesses, dependent: :destroy
   before_validation :generate_slug, on: :create
   enum link_type: { regular: 0, temporal: 1, private_link: 2, ephemeral: 3 }
 

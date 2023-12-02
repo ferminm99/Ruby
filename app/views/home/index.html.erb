@@ -1,6 +1,7 @@
 <% if user_signed_in? %>
   <h1>Bienvenido, <%= current_user.username %>!</h1>
   <%= button_to 'Cerrar sesión', destroy_user_session_path, method: :delete %>
+  <%= button_to "Cancelar mi cuenta", user_registration_path, class: 'confirm-delete-account', method: :delete %>
     <table>
         <thead>
             <tr>
@@ -15,9 +16,9 @@
             <tr>
                 <td><%= link.url %></td>
                 <td><%= link_to 'View Report', link_report_path(link) %></td>
-                <td><%= link_to 'Show', link_show_path(link.slug) %></td>
+                <td><%= link_to 'Show', shortened_path(link.slug) %></td>
                 <td><%= link_to 'Edit', edit_link_path(link) %></td>
-                <td><%= button_to 'Destroy', link_destroy_path(link), method: :delete, data: { confirm: 'Are you sure?' } %> </td>
+                <td><%= button_to 'Destroy', link_destroy_path(link), method: :delete, class: 'confirm-delete' %> </td>
                 
             </tr>
             <% end %>
@@ -29,3 +30,26 @@
   <%= link_to 'Iniciar sesión', new_user_session_path %> |
   <%= link_to 'Registrarse', new_user_registration_path %>
 <% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.confirm-delete').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      var message = "¿Estas seguro que quieres eliminar este link?";
+      if (!confirm(message)) {
+        event.preventDefault();
+      }
+    });
+  });
+  document.querySelectorAll('.confirm-delete-account').forEach(function(element) {
+    element.addEventListener('click', function(event) {
+      var message = "¿Estas seguro que quieres eliminar esta cuenta?";
+      if (!confirm(message)) {
+        event.preventDefault();
+      }
+    });
+  });
+});
+
+
+</script>
