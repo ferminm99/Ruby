@@ -7,14 +7,32 @@ class LinksController < ApplicationController
     end
   
     def show
-      @link = current_user.links.find_by(slug: params[:slug])
-      
-      if @link.nil? || !@link.accessible?
+        
+      @link = Link.find_by(slug: params[:slug])
+      logger.debug "Accediendo a la acción show"
+      logger.debug "Accediendo a la acción show"
+
+      logger.debug "Slug recibido: #{params[:slug]}"
+      logger.debug "Usuario actual: #{current_user.id}"
+
+      if @link.nil?
+        logger.debug "Link no encontrado"
         redirect_to home_index_path, alert: 'Link not found'
+        return
+      end
+    
+      if !@link.accessible?(request)
+        logger.debug "Link no accesible"
+        redirect_to home_index_path, alert: 'Link not accessible'
+        return  
+    #   if @link.nil? || !@link.accessible?(request)
+    #     logger.debug "NO ENCONTRO NADA"
+    #     redirect_to home_index_path, alert: 'Link not found'
       elsif @link.private_link?
         # Lógica para manejar la solicitud de clave
       else
-        @link.increment_access_count if @link.ephemeral?
+        @link.increment_access_count
+        logger.debug "SE CREO?!?!?"
         LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
         redirect_to @link.url, allow_other_host: true
       end
@@ -50,6 +68,24 @@ class LinksController < ApplicationController
         @link = Link.find(params[:id])
         @link.destroy
         redirect_to home_index_path, notice: 'Link was successfully destroyed.'
+    end
+
+
+     def report
+        @link = Link.find(params[:id])
+        @accesses = @link.link_accesses.order(accessed_at: :desc)
+
+        if params[:start_date].present?
+        @accesses = @accesses.where('accessed_at >= ?', params[:start_date])
+        end
+
+        if params[:end_date].present?
+        @accesses = @accesses.where('accessed_at <= ?', params[:end_date])
+        end
+
+        if params[:ip_address].present?
+        @accesses = @accesses.where(ip_address: params[:ip_address])
+        end
     end
   
     private

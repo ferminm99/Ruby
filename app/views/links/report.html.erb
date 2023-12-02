@@ -1,0 +1,44 @@
+<!-- app/views/links/report.html.erb -->
+
+<h1>Report for <%= @link.url %></h1>
+
+<%= form_with(url: link_report_path(@link), method: :get) do |form| %>
+  <div>
+    <%= form.label :start_date, "Start Date" %>
+    <%= form.date_field :start_date %>
+  </div>
+
+  <div>
+    <%= form.label :end_date, "End Date" %>
+    <%= form.date_field :end_date %>
+  </div>
+
+  <div>
+    <%= form.label :ip_address, "IP Address" %>
+    <%= form.text_field :ip_address %>
+  </div>
+
+  <%= form.submit "Filter" %>
+<% end %>
+
+<%= link_to 'Back', home_index_path %>
+
+<!-- Resto del código para mostrar la tabla de reportes -->
+
+
+<table>
+  <thead>
+    <tr>
+      <th>Accessed At</th>
+      <th>IP Address</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @accesses.each do |access| %>
+      <tr>
+        <td><%= access.accessed_at %></td>
+        <td><%= access.ip_address %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

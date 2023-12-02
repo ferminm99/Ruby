@@ -12,6 +12,6 @@ Rails.application.routes.draw do
   resources :links, except: [:show, :destroy]
   get '/links/:slug', to: 'links#show', as: :link_show
   delete '/links/:id', to: 'links#destroy', as: :link_destroy
-
+  get '/links/:id/report', to: 'links#report', as: :link_report
   # ... cualquier otra ruta que necesites
 end

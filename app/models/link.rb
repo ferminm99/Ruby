@@ -1,5 +1,6 @@
 class Link < ApplicationRecord
   belongs_to :user
+  has_many :link_accesses
   before_validation :generate_slug, on: :create
   enum link_type: { regular: 0, temporal: 1, private_link: 2, ephemeral: 3 }
 
@@ -24,19 +25,26 @@ class Link < ApplicationRecord
   def expired?
     temporal? && expiration_date < Time.current
   end
+  
 
   public
   # Verificar si el link es accesible (no expirado y no usado si es efímero)
   def accessible?(request)
+    logger.debug "Objeto Link: #{self.inspect}"
+    logger.debug "Verificando accesibilidad del link: #{link_type}"
     case link_type
     when 'regular'
+      logger.debug "Link regular"
       true
-    when 'temporary'
-      Time.current < expires_at
-    when 'private'
-      request.session[:"link_#{id}_authenticated"]
+    when 'temporal'
+      logger.debug "Link temporal"
+      expired?
+    when 'private_link'
+      logger.debug "Link privado"
+      request.session[:"link_#{id}_authenticated"] == true
     when 'ephemeral'
-      !accessed
+      logger.debug "Link efimero"
+      link_accesses.count < 1
     else
       false
     end

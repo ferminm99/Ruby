@@ -14,9 +14,11 @@
             <% @links.each do |link| %>
             <tr>
                 <td><%= link.url %></td>
+                <td><%= link_to 'View Report', link_report_path(link) %></td>
                 <td><%= link_to 'Show', link_show_path(link.slug) %></td>
                 <td><%= link_to 'Edit', edit_link_path(link) %></td>
                 <td><%= button_to 'Destroy', link_destroy_path(link), method: :delete, data: { confirm: 'Are you sure?' } %> </td>
+                
             </tr>
             <% end %>
         </tbody>
