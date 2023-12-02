@@ -22,16 +22,28 @@ class LinksController < ApplicationController
       end
     
       if !@link.accessible?(request)
-        logger.debug "Link no accesible"
-        redirect_to home_index_path, alert: 'Link not accessible'
+        if @link.temporal? && @link.expired?
+            render status: :not_found # O redirigir a una página de error 404 personalizada
+        else
+            redirect_to alguna_ruta_error_path, alert: 'Link not accessible'
+        end
+        if @link.ephemeral?
+            render status: :forbidden # O redirigir a una página de error 403 personalizada
+            return
+        end
         return  
     #   if @link.nil? || !@link.accessible?(request)
     #     logger.debug "NO ENCONTRO NADA"
     #     redirect_to home_index_path, alert: 'Link not found'
       elsif @link.private_link?
+        if !@link.accessible?(request)
+            redirect_to solicitar_clave_link_path(@link)
+            return
+        end
         # Lógica para manejar la solicitud de clave
       else
         @link.increment_access_count
+        @link.increment!(:access_count)
         logger.debug "SE CREO?!?!?"
         LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
         redirect_to @link.url, allow_other_host: true
