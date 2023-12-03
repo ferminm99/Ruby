@@ -78,7 +78,7 @@ Controlador y Vistas para Link
 Crear acciones en LinksController y vistas correspondientes en app/views/links
 Definir rutas en config/routes.rb
 
-### Explicacion de cada parte
+### Explicacion de cada parte a la hora de usarla
 
 ## Gestion de usuarios
 
@@ -86,7 +86,7 @@ Se te permite crear cuenta, loguear o desloguear, cancelarla dentro del home y t
 
 ## Home
 
-Aca podes ver tus links, crearlos, editarlos, borrarlos y acceder
+Aca podes ver tus links en una tabla, crearlos, editarlos, borrarlos y acceder
 
 ## Crear/Editar link
 
@@ -94,7 +94,7 @@ Tenes los tipos de links con sus distintas funcionalidades, el normal, el privad
 
 ## Reportes
 
-Aca se observan
+Aca se observan los accesos a cada link en una tabla con el IP, como tambien otra tabla donde se ven los accesos en cada dia, y hay un filtro para buscar si hay demasiados
 
 ```bash
 
