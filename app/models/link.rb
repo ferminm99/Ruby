@@ -3,11 +3,12 @@ class Link < ApplicationRecord
   has_many :link_accesses, dependent: :destroy
   before_validation :generate_slug, on: :create
   enum link_type: { regular: 0, temporal: 1, private_link: 2, ephemeral: 3 }
+  has_secure_password validations: false
 
   # Validaciones
   validates :url, presence: true
   validates :slug, uniqueness: true, presence: true
-  validates :password_digest, presence: true, if: :private_link?
+  validates :password, presence: true, if: :private_link?
   validates :expiration_date, presence: true, if: :temporal?
 
   private
@@ -38,7 +39,7 @@ class Link < ApplicationRecord
       true
     when 'temporal'
       logger.debug "Link temporal"
-      expired?
+      !expired?
     when 'private_link'
       logger.debug "Link privado"
       request.session[:"link_#{id}_authenticated"] == true

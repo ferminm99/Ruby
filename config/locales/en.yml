@@ -29,3 +29,8 @@
 
 en:
   hello: "Hello world"
+  link_types:
+    regular: "Regular"
+    temporal: "Temporal"
+    private_link: "Privado"
+    ephemeral: "Efímero"

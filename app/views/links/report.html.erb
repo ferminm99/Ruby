@@ -1,44 +1,65 @@
 <!-- app/views/links/report.html.erb -->
+<div  class="edit-link-container">
+<h1 >Reporte para <%= @link.url %></h1>
 
-<h1>Report for <%= @link.url %></h1>
+<%= link_to 'Volver', home_index_path, class: 'back-link' %>
+</div>
+<div class="filter-form">
+  <%= form_with(url: link_report_path(@link), method: :get, html: { class: 'filter-form-inner' }) do |form| %>
+    <div class="form-row">
+      <%= form.label :start_date, "Start Date" %>
+      <%= form.date_field :start_date %>
+    </div>
 
-<%= form_with(url: link_report_path(@link), method: :get) do |form| %>
-  <div>
-    <%= form.label :start_date, "Start Date" %>
-    <%= form.date_field :start_date %>
-  </div>
+    <div class="form-row">
+      <%= form.label :end_date, "End Date" %>
+      <%= form.date_field :end_date %>
+    </div>
 
-  <div>
-    <%= form.label :end_date, "End Date" %>
-    <%= form.date_field :end_date %>
-  </div>
+    <div class="form-row">
+      <%= form.label :ip_address, "IP Address" %>
+      <%= form.text_field :ip_address %>
+    </div>
 
-  <div>
-    <%= form.label :ip_address, "IP Address" %>
-    <%= form.text_field :ip_address %>
-  </div>
-
-  <%= form.submit "Filter" %>
-<% end %>
-
-<%= link_to 'Back', home_index_path %>
+    <%= form.submit "Filter", class: 'filter-button' %>
+  <% end %>
+</div>
 
 <!-- Resto del código para mostrar la tabla de reportes -->
 
-
-<table>
+<div class="content">
+<table class="buttons-container">
   <thead>
     <tr>
       <th>Accessed At</th>
       <th>IP Address</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody class="buttons-container">
     <% @accesses.each do |access| %>
       <tr>
         <td><%= access.accessed_at %></td>
-        <td><%= access.ip_address %></td>
+        <td style="text-align: center;"><%= access.ip_address %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
+</div>
+<div class="content">
+<table class="buttons-container">
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Number of Accesses</th>
+    </tr>
+  </thead>
+  <tbody class="buttons-container">
+    <% @daily_accesses.each do |date, count| %>
+      <tr>
+        <td><%= date %></td>
+        <td style="text-align: center;"><%= count %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+</div>

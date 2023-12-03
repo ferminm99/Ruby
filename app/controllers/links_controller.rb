@@ -22,12 +22,16 @@ class LinksController < ApplicationController
       end
     
       if !@link.accessible?(request)
-        if @link.temporal? && @link.expired?
-            render status: :not_found # O redirigir a una página de error 404 personalizada
-        else
-            redirect_to alguna_ruta_error_path, alert: 'Link not accessible'
+        logger.debug "Inaccesible"
+        if @link.temporal?
+            render 'errors/404', status: :not_found # O redirigir a una página de error 404 personalizada
+            return # Asegúrate de no ejecutar más código después
         end
         if @link.ephemeral?
+            render 'errors/403', status: :not_found # O redirigir a una página de error 404 personalizada
+            return # Asegúrate de no ejecutar más código después
+        end
+        if @link.private_link?
             render status: :forbidden # O redirigir a una página de error 403 personalizada
             return
         end
@@ -36,15 +40,21 @@ class LinksController < ApplicationController
     #     logger.debug "NO ENCONTRO NADA"
     #     redirect_to home_index_path, alert: 'Link not found'
       elsif @link.private_link?
-        if !@link.accessible?(request)
-            redirect_to solicitar_clave_link_path(@link)
+            if session[:"link_#{params[:id]}_authenticated"].blank? 
+                @link.increment_access_count
+                @link.increment!(:access_count)
+                LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
+                redirect_to @link.url, allow_other_host: true
+            else
+                logger.debug "Error al autenticar algo de link?"
+                redirect_to home_index_path
+            end
+            
             return
-        end
         # Lógica para manejar la solicitud de clave
       else
         @link.increment_access_count
         @link.increment!(:access_count)
-        logger.debug "SE CREO?!?!?"
         LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
         redirect_to @link.url, allow_other_host: true
       end
@@ -98,8 +108,35 @@ class LinksController < ApplicationController
         if params[:ip_address].present?
         @accesses = @accesses.where(ip_address: params[:ip_address])
         end
+
+        # Filtrado basado en la forma (si se envían parámetros)
+        start_date = params[:start_date].presence || Date.today
+        end_date = params[:end_date].presence || Date.today
+        ip_address = params[:ip_address]
+
+        query = @link.link_accesses.where(accessed_at: start_date.beginning_of_day..end_date.end_of_day)
+        query = query.where(ip_address: ip_address) if ip_address.present?
+
+        # Agrupando y contando accesos por día
+        @daily_accesses = query.group("DATE(accessed_at)").count
     end
   
+    def solicitar_clave
+        @link = Link.find(params[:id])
+    end
+
+    def verificar_clave
+        @link = Link.find(params[:id])
+        if @link.authenticate(params[:password])
+          # Si la contraseña es correcta, guarda una señal en la sesión y redirige al link
+          session[:"link_#{params[:id]}_authenticated"] = true
+          redirect_to shortened_path(@link.slug)
+        else
+          # Si la contraseña es incorrecta, redirige de nuevo al formulario con un mensaje de error
+          redirect_to home_index_path, alert: "Contraseña incorrecta"
+        end
+      end
+
     private
   
     def set_link
@@ -107,7 +144,7 @@ class LinksController < ApplicationController
     end
   
     def link_params
-      params.require(:link).permit(:url, :link_type, :password_digest, :expiration_date)
+      params.require(:link).permit(:url, :link_type, :password, :expiration_date)
     end
       
 end  

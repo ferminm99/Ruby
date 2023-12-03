@@ -1,3 +1,4 @@
+<div class="form-container">
 <%= form_with(model: link, local: true) do |form| %>
   <% if link.errors.any? %>
     <div id="error_explanation">
@@ -17,16 +18,17 @@
 
   <div class="field">
     <%= form.label :link_type %>
-    <%= form.select :link_type, Link.link_types.keys.map { |type| [type.titleize, type] } %>
+    <%= form.select :link_type, Link.link_types.keys.map { |type| [t("link_types.#{type}"), type] } %>
+
   </div>
 
-  <div class="field">
-    <%= form.label :password_digest, "Password (for private links)" %>
-    <%= form.password_field :password_digest %>
+  <div class="field field-password">
+    <%= form.label :password, "Contraseña (para enlaces privados)" %>
+    <%= form.password_field :password %>
   </div>
 
-  <div class="field">
-    <%= form.label :expiration_date, "Expiration Date (for temporal links)" %>
+  <div class="field field-expiration">
+    <%= form.label :expiration_date, "Fecha de expiración (para enlaces temporales)" %>
     <%= form.datetime_select :expiration_date %>
   </div>
 
@@ -34,9 +36,30 @@
     <%= form.submit %>
   </div>
 <% end %>
-
+</div>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
+    var linkTypeSelect = document.querySelector('#link_link_type');
+    var passwordField = document.querySelector('.field-password');
+    var expirationField = document.querySelector('.field-expiration');
+
+    function toggleFields() {
+      var linkType = linkTypeSelect.value;
+      passwordField.style.display = linkType === 'private_link' ? 'block' : 'none';
+      expirationField.style.display = linkType === 'temporal' ? 'block' : 'none';
+    }
+
+    function togglePasswordField() {
+      passwordField.style.display = linkTypeSelect.value === 'private_link' ? 'block' : 'none';
+    }
+
+    linkTypeSelect.addEventListener('change', toggleFields);
+    linkTypeSelect.addEventListener('change', togglePasswordField);
+
+    // Ejecutar al cargar la página para establecer el estado inicial
+    toggleFields();
+    togglePasswordField();
+
     function updateLinkTypeFields() {
       var linkType = document.querySelector("#link_link_type").value;
       document.querySelector("#link_password_digest").style.display = linkType == "private_link" ? "block" : "none";

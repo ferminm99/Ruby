@@ -1,5 +1,8 @@
-<h1>New Link</h1>
+<div class="edit-link-container">
+    <h1>Nuevo Link</h1>
 
-<%= render 'form', link: @link %>
+    <%= link_to 'Volver', home_index_path, class: 'back-link'  %>
 
-<%= link_to 'Back', links_path %>
+    <%= render 'form', link: @link %>
+
+</div>

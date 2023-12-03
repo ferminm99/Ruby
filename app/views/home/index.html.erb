@@ -1,37 +1,93 @@
 <% if user_signed_in? %>
-  <h1>Bienvenido, <%= current_user.username %>!</h1>
-  <%= button_to 'Cerrar sesión', destroy_user_session_path, method: :delete %>
-  <%= button_to "Cancelar mi cuenta", user_registration_path, class: 'confirm-delete-account', method: :delete %>
-    <table>
-        <thead>
-            <tr>
-            <th>URL</th>
-            <th><%= link_to 'New Link', new_link_path %></th>
-            <th colspan="3"></th>
-            </tr>
-        </thead>
-
-        <tbody>
-            <% @links.each do |link| %>
-            <tr>
-                <td><%= link.url %></td>
-                <td><%= link_to 'View Report', link_report_path(link) %></td>
-                <td><%= link_to 'Show', shortened_path(link.slug) %></td>
-                <td><%= link_to 'Edit', edit_link_path(link) %></td>
-                <td><%= button_to 'Destroy', link_destroy_path(link), method: :delete, class: 'confirm-delete' %> </td>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <% if user_signed_in? %>
+            <span>Bienvenido, <%= current_user.username %>!</span>
+            <div class="navbar-links">
                 
-            </tr>
+                <!-- Otros enlaces de navegación -->
+            </div>
+            <div class="navbar-end">
+                <%= button_to 'Cerrar sesión', destroy_user_session_path, method: :delete, class: 'btn' %>
+                <%= button_to 'Cancelar mi cuenta', user_registration_path, method: :delete, class: 'btn btn-delete-account confirm-delete-account' %>
+            </div>
+            <% else %>
+            <%= link_to 'Iniciar sesión', new_user_session_path %>
+            <%= link_to 'Registrarse', new_user_registration_path %>
             <% end %>
-        </tbody>
-    </table>
-
+        </nav>
+    </nav>
+    <div class="content">
+    <%= link_to 'Crear Link', new_link_path, class: 'btn create-link-btn' %>
+    </div>
+        <table class="buttons-container">
+            <thead>
+                <tr>
+                <th>URL</th>
+                <th colspan="1"></th>
+                <th>Acciones</th>
+                
+                <th colspan="3"></th>
+                </tr>
+            </thead>
+            
+            <tbody class="buttons-container">
+                <% @links.each do |link| %>
+                <tr>
+                    <td><%= link.url %></td>
+                    <td><%= link_to 'Reportes', link_report_path(link),class: 'btn' %></td>
+                    <td><% if link.private_link? %>
+                            <%= button_tag 'Acceder', onclick: "openModal('#{link.to_json}')", class: 'btn' %>
+                        <% else %>
+                            <%= link_to 'Mostrar', shortened_path(link.slug), class: 'btn' %>
+                        <% end %>
+                    </td>
+                    <td><%= link_to 'Editar', edit_link_path(link),class: 'btn' %></td>
+                    <td><%= button_to 'Borrar', link_destroy_path(link), method: :delete, class: 'btn btn-delete-account confirm-delete' %> </td>
+                    
+                </tr>
+                <% end %>
+            </tbody>
+        </table>
+</div>
 <% else %>
   <h1>Bienvenido a Nuestro Sitio!</h1>
-  <%= link_to 'Iniciar sesión', new_user_session_path %> |
-  <%= link_to 'Registrarse', new_user_registration_path %>
+    <div class="buttons-container">
+        <%= link_to 'Iniciar sesión', new_user_session_path %> |
+        <%= link_to 'Registrarse', new_user_registration_path %>
+    </div>
 <% end %>
 
+  <div id="passwordModal" class="modal" style="display: none;">
+    <%= form_with url: "#", method: :post, id: "passwordForm" do |form| %>
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+        <%= form.hidden_field :id, id: 'link_id_field' %>
+        <p>Por favor ingresa la contraseña para acceder al enlace:</p>
+        <%= form.password_field :password, id: "linkPassword" %>
+        <%= form.submit "Verificar" %>
+    <% end %>
+
+  </div>
+
+
 <script>
+    function openModal(linkData) {
+        var link = JSON.parse(linkData);
+        var form = document.getElementById('passwordForm');
+        form.action = '/links/' + link.id + '/verificar_clave';
+        document.getElementById('link_id_field').value = link.id;
+        var modal = document.getElementById('passwordModal');
+        modal.style.display = 'block';
+    }
+
+
+
+    // Opcional: Función para cerrar el modal
+    function closeModal() {
+        var modal = document.getElementById('passwordModal');
+        modal.style.display = 'none';
+    }
+
   document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.confirm-delete').forEach(function(element) {
     element.addEventListener('click', function(event) {

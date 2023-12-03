@@ -13,5 +13,7 @@ Rails.application.routes.draw do
   get '/links/:slug', to: 'links#show', as: :shortened
   delete '/links/:id', to: 'links#destroy', as: :link_destroy
   get '/links/:id/report', to: 'links#report', as: :link_report
+  post 'links/:id/verificar_clave', to: 'links#verificar_clave', as: 'verificar_clave_link'
+
   # ... cualquier otra ruta que necesites
 end
