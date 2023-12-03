@@ -17,7 +17,7 @@
   </div>
 
   <div class="field">
-    <%= form.label :link_type %>
+    <%= form.label :link_type, "Tipo de link" %>
     <%= form.select :link_type, Link.link_types.keys.map { |type| [t("link_types.#{type}"), type] } %>
 
   </div>
