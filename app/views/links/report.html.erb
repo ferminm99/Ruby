@@ -56,7 +56,7 @@
   <tbody class="buttons-container">
     <% @daily_accesses.each do |date, count| %>
       <tr>
-        <td><%= date %></td>
+        <td><%= date.in_time_zone('UTC').strftime("%Y-%m-%d") %></td>
         <td style="text-align: center;"><%= count %></td>
       </tr>
     <% end %>

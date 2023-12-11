@@ -42,8 +42,29 @@
     left: 50%; /* Centrado horizontalmente */
     top: 50%; /* Centrado verticalmente */
     transform: translate(-50%, -50%); /* Ajuste fino del centro */
-    /* Más estilos (fondo, bordes, etc.) */
+    background-color: white; /* Fondo del modal */
+    padding: 20px; /* Espaciado interno */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra para resaltar */
 }
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 30px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+}
+
+.close-btn:hover,
+.close-btn:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
 
 /* app/assets/stylesheets/custom.css */
 

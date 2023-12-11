@@ -59,6 +59,7 @@
 <% end %>
 
   <div id="passwordModal" class="modal" style="display: none;">
+    <span class="close-btn">&times;</span>
     <%= form_with url: "#", method: :post, id: "passwordForm" do |form| %>
         <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
         <%= form.hidden_field :id, id: 'link_id_field' %>
@@ -80,7 +81,7 @@
         modal.style.display = 'block';
     }
 
-
+    var closeButton = document.querySelector('.close-btn');
 
     // Opcional: Función para cerrar el modal
     function closeModal() {
@@ -88,23 +89,25 @@
         modal.style.display = 'none';
     }
 
-  document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('.confirm-delete').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      var message = "¿Estas seguro que quieres eliminar este link?";
-      if (!confirm(message)) {
-        event.preventDefault();
-      }
+    closeButton.addEventListener('click', closeModal);
+
+    document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.confirm-delete').forEach(function(element) {
+      element.addEventListener('click', function(event) {
+        var message = "¿Estas seguro que quieres eliminar este link?";
+        if (!confirm(message)) {
+          event.preventDefault();
+        }
+      });
     });
-  });
-  document.querySelectorAll('.confirm-delete-account').forEach(function(element) {
-    element.addEventListener('click', function(event) {
-      var message = "¿Estas seguro que quieres eliminar esta cuenta?";
-      if (!confirm(message)) {
-        event.preventDefault();
-      }
+    document.querySelectorAll('.confirm-delete-account').forEach(function(element) {
+      element.addEventListener('click', function(event) {
+        var message = "¿Estas seguro que quieres eliminar esta cuenta?";
+        if (!confirm(message)) {
+          event.preventDefault();
+        }
+      });
     });
-  });
 });
 
 

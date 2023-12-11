@@ -93,32 +93,36 @@ class LinksController < ApplicationController
     end
 
 
-     def report
-        @link = Link.find(params[:id])
-        @accesses = @link.link_accesses.order(accessed_at: :desc)
-
-        if params[:start_date].present?
-        @accesses = @accesses.where('accessed_at >= ?', params[:start_date])
-        end
-
-        if params[:end_date].present?
-        @accesses = @accesses.where('accessed_at <= ?', params[:end_date])
-        end
-
-        if params[:ip_address].present?
-        @accesses = @accesses.where(ip_address: params[:ip_address])
-        end
-
-        # Filtrado basado en la forma (si se envían parámetros)
-        start_date = params[:start_date].presence || Date.today
-        end_date = params[:end_date].presence || Date.today
-        ip_address = params[:ip_address]
-
-        query = @link.link_accesses.where(accessed_at: start_date.beginning_of_day..end_date.end_of_day)
-        query = query.where(ip_address: ip_address) if ip_address.present?
-
-        # Agrupando y contando accesos por día
-        @daily_accesses = query.group("DATE(accessed_at)").count
+    def report
+      @link = Link.find(params[:id])
+    
+      # Asegúrate de que las fechas de inicio y fin son fechas válidas o nil
+      start_date = params[:start_date].presence && Date.parse(params[:start_date]).beginning_of_day
+      end_date = params[:end_date].presence && Date.parse(params[:end_date]).end_of_day
+    
+      # Si no se proporciona start_date, usa la fecha del primer acceso
+      start_date ||= @link.link_accesses.minimum(:accessed_at)&.to_date&.beginning_of_day
+      # Si no se proporciona end_date, usa la fecha y hora actual
+      end_date ||= Time.zone.now.end_of_day
+    
+      # Filtro por IP si se proporciona
+      ip_address = params[:ip_address].presence
+    
+      # Cadena de consultas basadas en los parámetros proporcionados
+      @accesses = @link.link_accesses
+                        .where('accessed_at >= ?', start_date)
+                        .where('accessed_at <= ?', end_date)
+                        .yield_self { |query| ip_address ? query.where(ip_address: ip_address) : query }
+                        .order(accessed_at: :desc)
+    
+      # Agrupando y contando accesos por día
+      @daily_accesses = @accesses.each_with_object(Hash.new(0)) do |access, counts|
+        date = access.accessed_at.to_date
+        counts[date] += 1
+      end
+    
+      # Ordenas el hash por fecha
+      @daily_accesses = @daily_accesses.sort.to_h
     end
   
     def solicitar_clave
