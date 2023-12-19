@@ -1,34 +1,28 @@
 class LinksController < ApplicationController
     before_action :authenticate_user!
     before_action :set_link, only: [:edit, :update, :destroy]
-  
+    skip_before_action :authenticate_user!, only: [:follow, :verificar_clave, :password_form]
+
     def index
       @links = current_user.links
     end
   
-    def show
+    def follow
         
       @link = Link.find_by(slug: params[:slug])
-      logger.debug "Accediendo a la acción show"
-      logger.debug "Accediendo a la acción show"
-
-      logger.debug "Slug recibido: #{params[:slug]}"
-      logger.debug "Usuario actual: #{current_user.id}"
 
       if @link.nil?
-        logger.debug "Link no encontrado"
         redirect_to home_index_path, alert: 'Link not found'
         return
       end
     
       if !@link.accessible?(request)
-        logger.debug "Inaccesible"
         if @link.temporal?
             render 'errors/404', status: :not_found # O redirigir a una página de error 404 personalizada
             return # Asegúrate de no ejecutar más código después
         end
         if @link.ephemeral?
-            render 'errors/403', status: :not_found # O redirigir a una página de error 404 personalizada
+            render 'errors/403', status: :forbidden # O redirigir a una página de error 404 personalizada
             return # Asegúrate de no ejecutar más código después
         end
         if @link.private_link?
@@ -40,26 +34,35 @@ class LinksController < ApplicationController
     #     logger.debug "NO ENCONTRO NADA"
     #     redirect_to home_index_path, alert: 'Link not found'
       elsif @link.private_link?
-            if session[:"link_#{params[:id]}_authenticated"].blank? 
-                @link.increment_access_count
-                @link.increment!(:access_count)
-                LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
-                redirect_to @link.url, allow_other_host: true
-            else
-                logger.debug "Error al autenticar algo de link?"
-                redirect_to home_index_path
-            end
-            
-            return
+        redirect_to password_form_link_path(@link)
         # Lógica para manejar la solicitud de clave
       else
-        @link.increment_access_count
         @link.increment!(:access_count)
         LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
         redirect_to @link.url, allow_other_host: true
       end
     end
   
+    def password_form
+      @link = Link.find_by(id: params[:id])
+      if @link.nil?
+        render 'errors/404', status: :not_found
+        return 
+      end
+    end
+
+    def verificar_clave
+      @link = Link.find(params[:id])
+      if @link.authenticate(params[:password])
+        @link.increment!(:access_count)
+        LinkAccess.create(link: @link, accessed_at: Time.current, ip_address: request.remote_ip)
+        redirect_to @link.url, allow_other_host: true
+      else
+        # Manejar contraseña incorrecta
+        redirect_to password_form_link_path(@link), alert: 'Contraseña incorrecta'
+      end
+    end
+
     def new
       @link = current_user.links.build
     end
@@ -129,17 +132,6 @@ class LinksController < ApplicationController
         @link = Link.find(params[:id])
     end
 
-    def verificar_clave
-        @link = Link.find(params[:id])
-        if @link.authenticate(params[:password])
-          # Si la contraseña es correcta, guarda una señal en la sesión y redirige al link
-          session[:"link_#{params[:id]}_authenticated"] = true
-          redirect_to shortened_path(@link.slug)
-        else
-          # Si la contraseña es incorrecta, redirige de nuevo al formulario con un mensaje de error
-          redirect_to home_index_path, alert: "Contraseña incorrecta"
-        end
-      end
 
     private
   

@@ -12,8 +12,8 @@ user1 = User.create!(email: 'testuser1@example.com',username: "test1", password:
 user2 = User.create!(email: 'testuser2@example.com',username: "test2", password: 'password', password_confirmation: 'password')
 # Añade más usuarios según sea necesario
 # Crear links de prueba
-link1 = Link.create!(url: 'https://example1.com', user: user1)
-link2 = Link.create!(url: 'https://example2.com', user: user2)
+link1 = Link.create!(url: 'https://youtube.com', user: user1)
+link2 = Link.create!(url: 'https://twitter.com', user: user2)
 # Añade más links según sea necesario
 # Simular accesos a los links
 10.times do |i|

@@ -55,6 +55,20 @@ Controlador y Vistas para Link
 Crear acciones en LinksController y vistas correspondientes en app/views/links
 Definir rutas en config/routes.rb
 
+## DECISIONES DE DISEÑO
+
+## Modelos y Relaciones
+
+User: Representa a los usuarios de la aplicación. Cada usuario puede tener múltiples enlaces (Link). Utilizamos Devise para la autenticación, lo que añade campos como email y encrypted_password.
+Link: Representa un enlace o URL que un usuario puede compartir. Pertenece a un User y tiene muchos LinkAccess. Incluye campos como url, slug, y link_type. Utilizamos un enum para link_type para definir diferentes tipos de enlaces (regular, temporal, privado, efímero).
+LinkAccess: Registra cada acceso a un enlace, asociado con un Link. Guarda información como la fecha de acceso y la dirección IP.
+
+## Validaciones en Modelos:
+
+User: Validacion de la presencia y unicidad del username.
+Link: Validacion de la presencia de url y slug, slug único. Además, validaciones condicionales para password y expiration_date dependiendo del link_type.
+LinkAccess: Validaciones de presencia para link_id y ip_address.
+
 ### Explicacion de cada parte a la hora de usarla
 
 ## Gestion de usuarios

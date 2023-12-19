@@ -34,7 +34,7 @@
             <tbody class="buttons-container">
                 <% @links.each do |link| %>
                 <tr>
-                    <td><%= link.url %></td>
+                    <td><%= "http://localhost:3000/links/#{link.slug}" %></td>
                     <td><%= link_to 'Reportes', link_report_path(link),class: 'btn' %></td>
                     <td><% if link.private_link? %>
                             <%= button_tag 'Acceder', onclick: "openModal('#{link.to_json}')", class: 'btn' %>
@@ -43,7 +43,7 @@
                         <% end %>
                     </td>
                     <td><%= link_to 'Editar', edit_link_path(link),class: 'btn' %></td>
-                    <td><%= button_to 'Borrar', link_destroy_path(link), method: :delete, class: 'btn btn-delete-account confirm-delete' %> </td>
+                    <td><%= button_to 'Borrar', link_path(link), method: :delete, class: 'btn btn-delete-account confirm-delete' %> </td>
                     
                 </tr>
                 <% end %>

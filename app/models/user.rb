@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :links, dependent: :destroy
 
   # Validaciones
-  validates :username, presence: true, uniqueness: true
+  validates :username, presence: true, uniqueness: true, length: { minimum: 3 }
 
   # ... cualquier otra lógica de modelo que necesites
 end

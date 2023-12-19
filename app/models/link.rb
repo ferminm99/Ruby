@@ -11,6 +11,31 @@ class Link < ApplicationRecord
   validates :password, presence: true, if: :private_link?
   validates :expiration_date, presence: true, if: :temporal?
 
+    # Verificar si el link está expirado
+    def expired?
+      temporal? && expiration_date < Time.current
+    end
+    # Verificar si el link es accesible (no expirado y no usado si es efímero)
+    def accessible?(request)
+      logger.debug "Objeto Link: #{self.inspect}"
+      logger.debug "Verificando accesibilidad del link: #{link_type}"
+      case link_type
+      when 'regular'
+        logger.debug "Link regular"
+        true
+      when 'temporal'
+        logger.debug "Link temporal"
+        !expired?
+      when 'private_link'
+        logger.debug "Link privado"
+      when 'ephemeral'
+        logger.debug "Link efimero"
+        link_accesses.count < 1
+      else
+        false
+      end
+    end
+
   private
   # Generación del slug
   def generate_slug
@@ -22,34 +47,9 @@ class Link < ApplicationRecord
     end
   end
 
-  # Verificar si el link está expirado
-  def expired?
-    temporal? && expiration_date < Time.current
-  end
   
 
-  public
-  # Verificar si el link es accesible (no expirado y no usado si es efímero)
-  def accessible?(request)
-    logger.debug "Objeto Link: #{self.inspect}"
-    logger.debug "Verificando accesibilidad del link: #{link_type}"
-    case link_type
-    when 'regular'
-      logger.debug "Link regular"
-      true
-    when 'temporal'
-      logger.debug "Link temporal"
-      !expired?
-    when 'private_link'
-      logger.debug "Link privado"
-      request.session[:"link_#{id}_authenticated"] == true
-    when 'ephemeral'
-      logger.debug "Link efimero"
-      link_accesses.count < 1
-    else
-      false
-    end
-  end
+
 
   # Lógica para incrementar el contador de accesos (para links efímeros)
   def increment_access_count
