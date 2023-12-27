@@ -59,7 +59,7 @@ Definir rutas en config/routes.rb
 
 ## Modelos y Relaciones
 
-User: Representa a los usuarios de la aplicación. Cada usuario puede tener múltiples enlaces (Link). Utilizamos Devise para la autenticación, lo que añade campos como email y encrypted_password.
+User: Representa a los usuarios de la aplicación. Cada usuario puede tener múltiples enlaces (Link). Se utilizo Devise para la autenticación, lo que añade campos como email y encrypted_password.
 Link: Representa un enlace o URL que un usuario puede compartir. Pertenece a un User y tiene muchos LinkAccess. Incluye campos como url, slug, y link_type. Utilizamos un enum para link_type para definir diferentes tipos de enlaces (regular, temporal, privado, efímero).
 LinkAccess: Registra cada acceso a un enlace, asociado con un Link. Guarda información como la fecha de acceso y la dirección IP.
 
