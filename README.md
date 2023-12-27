@@ -2,7 +2,7 @@
 
 # Proyecto Rails
 
-Este documento resume los pasos principales para configurar y desarrollar el proyecto Rails, incluyendo la configuración de Devise, la creación de un modelo de usuario con un campo adicional, y la implementación de un sistema básico de ABM (Alta, Baja y Modificación) para el manejo de links.
+Este documento resume los pasos principales para configurar y desarrollar el proyecto Rails, incluyendo la configuración de Devise, el diseño de los modelos, y la implementación de un sistema básico de ABM (Alta, Baja y Modificación) para el manejo de links.
 
 ### Instalación de Rails
 
