@@ -4,6 +4,14 @@
 
 Este documento resume los pasos principales para configurar y desarrollar el proyecto Rails, incluyendo la configuración de Devise para todo lo relacionado con usuarios, el diseño de los modelos y los menús creados para manejar links y ver reportes.
 
+### Instalacion de Ruby con lo necesario para correr el repositorio con la version utilizada
+
+Una vez instalada la version 2.7.8 de ruby hacer lo siguiente en la carpeta donde clonas el repositorio
+gem install rails -v 6.0
+gem install bundler -v 2.2.33
+rake db:create
+rake db:migrate
+
 ### Instalación de Rails
 
 gem install rails
