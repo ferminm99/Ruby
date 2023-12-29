@@ -30,9 +30,6 @@ class LinksController < ApplicationController
             return
         end
         return  
-    #   if @link.nil? || !@link.accessible?(request)
-    #     logger.debug "NO ENCONTRO NADA"
-    #     redirect_to home_index_path, alert: 'Link not found'
       elsif @link.private_link?
         redirect_to password_form_link_path(@link)
         # Lógica para manejar la solicitud de clave
