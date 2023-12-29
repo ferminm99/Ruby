@@ -2,7 +2,7 @@
 
 # Proyecto Rails
 
-Este documento resume los pasos principales para configurar y desarrollar el proyecto Rails, incluyendo la configuración de Devise, la creación de un modelo de usuario con un campo adicional, y la implementación de un sistema básico de ABM (Alta, Baja y Modificación) para el manejo de links.
+Este documento resume los pasos principales para configurar y desarrollar el proyecto Rails, incluyendo la configuración de Devise para todo lo relacionado con usuarios, el diseño de los modelos y los menús creados para manejar links y ver reportes.
 
 ### Instalación de Rails
 
@@ -59,7 +59,7 @@ Definir rutas en config/routes.rb
 
 ## Modelos y Relaciones
 
-User: Representa a los usuarios de la aplicación. Cada usuario puede tener múltiples enlaces (Link). Utilizamos Devise para la autenticación, lo que añade campos como email y encrypted_password.
+User: Representa a los usuarios de la aplicación. Cada usuario puede tener múltiples enlaces (Link). Se utilizo Devise para la autenticación, lo que añade campos como email y encrypted_password.
 Link: Representa un enlace o URL que un usuario puede compartir. Pertenece a un User y tiene muchos LinkAccess. Incluye campos como url, slug, y link_type. Utilizamos un enum para link_type para definir diferentes tipos de enlaces (regular, temporal, privado, efímero).
 LinkAccess: Registra cada acceso a un enlace, asociado con un Link. Guarda información como la fecha de acceso y la dirección IP.
 
